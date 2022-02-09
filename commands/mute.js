@@ -1,13 +1,11 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Message } = require('discord.js');
+const { Message, ThreadChannel } = require('discord.js');
 
 const VOTING_TIME = 30;
 const DEFAULT_MUTE_LENGTH = 30;
-const DEFAULT_MESSAGE = "they are annoying."
+const DEFAULT_MESSAGE = "their actions"
 const YES_EMOJI = '🔊';
 const NO_EMOJI = '🔇';
-
-
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -26,16 +24,27 @@ module.exports = {
 
 	async execute(interaction) {
 		const target = interaction.options.getMember('target');
+		const commander = interaction.member;
 		const duration = interaction.options.getInteger('duration') || DEFAULT_MUTE_LENGTH;
 		const reason = interaction.options.getString('reason') || DEFAULT_MESSAGE;
-		await interaction.reply(`Voting to Mute ${target} for ${duration} seconds due to ${reason}`) ;
-		const message = await interaction.fetchReply();
+		
+		const message = await interaction.reply({ content:`Voting to Mute ${target} for ${duration} seconds due to ${reason}.`, fetchReply: true });
 		message.react(NO_EMOJI);
 		message.react(YES_EMOJI);
+
+		mute(target,DEFAULT_MUTE_LENGTH);
+
 	}
 }
 
-
+function compareMemberChannels(member1,member2){
+	console.log(member1.voice.channelId);
+	console.log(member2.voice.channelId);
+	if(member1.voice.channel.id == member2.voice.channel.id){
+		return true;
+	}
+	return false;
+}
 
 function mute(member, timeout) {
     member.voice.setMute(true);
