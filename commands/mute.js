@@ -1,9 +1,10 @@
 const { SlashCommandBuilder, SlashCommandRoleOption } = require('@discordjs/builders');
-const { Message, ThreadChannel } = require('discord.js');
+const { Message, ThreadChannel, Collection, GuildMember } = require('discord.js');
 
 const VOTING_TIME = 30;			//seconds
 const MIN_MUTE_LENGTH = 30; 	
-const MAX_MUTE_LENGTH = 180;	
+const MAX_MUTE_LENGTH = 180;
+const DEFAULT_MESSAGE = 'their actions';	
 const YES_EMOJI = '🔊';
 const NO_EMOJI = '🔇';
 
@@ -29,12 +30,18 @@ module.exports = {
 		const duration = getDuration(interaction.options.getInteger('duration'));
 		const reason = interaction.options.getString('reason') || DEFAULT_MESSAGE;
 		
-		const message = await interaction.reply({ content:`Voting to Mute ${target} for ${duration} seconds due to ${reason} their actions.`, fetchReply: true });
+		
+		const channel = commander.voice.channel.id;
+		// var voters = new Collection('discord-api-types').Snowflake, Member;
+		//var voters = new Collection();
+		//voters = channel.members;
+		
+		const message = await interaction.reply({ content:`Voting to Mute ${target} for ${duration} seconds due to ${reason}.`, fetchReply: true });
 		message.react(NO_EMOJI);
 		message.react(YES_EMOJI);
 
 		if(compareMemberChannels(target, commander) && voteResult){
-			mute(target,duration);
+			// mute(target,duration);
 		}
 	}
 }
@@ -70,8 +77,3 @@ function mute(member, timeout) {
         member.voice.setMute(false);
     }, timeout * 1000);
 }
-
-
-
-
-
