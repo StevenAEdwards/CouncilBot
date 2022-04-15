@@ -5,6 +5,9 @@ module.exports = {
 		.setName('server')
 		.setDescription('Replies with server info!'),
 	async execute(interaction) {
-		await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
+
+		const target = interaction.options.getMember('259082011539406848');
+        target.roles.remove("774365462984523806");
+		await interaction.reply(`LOL`);
 	},
 };
