@@ -8,11 +8,12 @@ module.exports = {
 
 	async execute(interaction) {
 		var jack = await interaction.guild.members.fetch('259082011539406848');
-		var steven = await interaction.guild.members.fetch('118106537737584645');
-		var current = await jack.roles.cache;
-		console.log(JSON.stringify(interaction.member.id, steven));
-		if (await interaction.member.id === steven.id) {
-			if (current.has("774365462984523806")) {
+		var user = await interaction.member.fetch();
+		var currentJack = await jack.roles.cache;
+		var currentUser = await user.roles.cache;
+
+		if (currentUser.has("774365462984523806")) {
+			if (currentJack.has("774365462984523806")) {
 				jack.roles.remove("774365462984523806");
 				await interaction.reply(`Removed`);
 			}
