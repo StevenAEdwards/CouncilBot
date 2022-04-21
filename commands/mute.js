@@ -7,6 +7,7 @@ const MAX_MUTE_LENGTH = 180;
 const DEFAULT_MESSAGE = 'their actions';
 const NO_EMOJI = '🔊';
 const YES_EMOJI = '🔇';
+const ADMIN_ROLE_ID = "774365462984523806";
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -30,7 +31,7 @@ module.exports = {
 		const reason = interaction.options.getString('reason') || DEFAULT_MESSAGE;
 
 		if (!compareMemberChannels(user, target)) {
-			await interaction.reply({ content: `You cannot Vote to Mute ${target} because they are in a different channel.` });
+			await interaction.reply({ content: `You cannot Vote to Mute ${target} because they are in a different channel or offline.` });
 		}
 		else {
 			let message = await interaction.reply({ content: `VOTING LIVE to Mute ${target} for ${duration} seconds due to ${reason}.`, fetchReply: true });
@@ -61,11 +62,11 @@ module.exports = {
 						message.edit(`VOTE FAILED: Not enough votes cast `)
 					}
 					else {
-						message.edit(`VOTE PASSED ${totals[YES_EMOJI]} TO ${totals[NO_EMOJI]}. Muting ${target} for ${duration} seconds due to ${reason}.`);
-						mute(target,duration);
+						message.edit(`VOTE PASSED ${totals[YES_EMOJI]} TO ${totals[NO_EMOJI]}. Muting ${target} for ${duration} seconds due to ${reason}.`);		
+						await muteAndDemote(target,duration);
 					}	
 				})
-				.catch(error => message.edit(`Oh shit something died ERROR:${JSON.stringify(error)}`));
+				//.catch(error => message.edit(`Oh shit something died ERROR:${JSON.stringify(error)}`));
 		}
 	}
 }
@@ -88,9 +89,20 @@ function compareMemberChannels(member1, member2) {
 	return member1.voice?.channel?.id === member2.voice?.channel?.id;
 }
 
-function mute(member, timeout) {
+async function muteAndDemote(member, timeout) {
+	var flag = false;
+	var currentMemberRoles = await member.roles.cache;
+
+	if (currentMemberRoles.has(ADMIN_ROLE_ID)) {
+		member.roles.remove(ADMIN_ROLE_ID);
+		flag = true;			
+	}
 	member.voice.setMute(true);
 	setTimeout(() => {
 		member.voice.setMute(false);
+		if(flag){
+			member.roles.add(ADMIN_ROLE_ID);
+			flag = false;
+		}
 	}, timeout * 1000);
 }
