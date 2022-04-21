@@ -7,7 +7,7 @@ module.exports = {
 		.addUserOption(option =>
 			option.setName('target')
 				.setDescription('User to Compare')
-				.setRequired(false)),
+				.setRequired(true)),
 	async execute(interaction) {
 		let user = await interaction.member.fetch();
 		let target = interaction.options.getMember('target');
