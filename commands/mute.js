@@ -30,8 +30,11 @@ module.exports = {
 		const duration = getDuration(interaction.options.getInteger('duration'));
 		const reason = interaction.options.getString('reason') || DEFAULT_MESSAGE;
 
-		if (!compareMemberChannels(user, target)) {
-			await interaction.reply({ content: `You cannot Vote to Mute ${target} because they are in a different channel or offline.` });
+		if(user.voice.channel === null){
+			await interaction.reply({ content: `${user} Please join a voice channel to use the mute command`});
+		}
+		else if (!compareMemberChannels(user, target)) {
+			await interaction.reply({ content: `${user} cannot Vote to Mute ${target.displayName} because they are in a different channel or offline.` });
 		}
 		else {
 			let message = await interaction.reply({ content: `VOTING LIVE to Mute ${target} for ${duration} seconds due to ${reason}.`, fetchReply: true });
@@ -66,7 +69,7 @@ module.exports = {
 						await muteAndDemote(target,duration);
 					}	
 				})
-				//.catch(error => message.edit(`Oh shit something died ERROR:${JSON.stringify(error)}`));
+				.catch(error => message.edit(`Oh shit something died ERROR:${JSON.stringify(error)}`));
 		}
 	}
 }

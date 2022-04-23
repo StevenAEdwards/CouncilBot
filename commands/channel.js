@@ -7,16 +7,18 @@ module.exports = {
 		.addUserOption(option =>
 			option.setName('target')
 				.setDescription('User to Compare')
-				.setRequired(true)),
+				.setRequired(false)),
 	async execute(interaction) {
 		let user = await interaction.member.fetch();
 		let target = interaction.options.getMember('target');
-        
-		const channel1 = user.voice.channel.id;
-		const channel2 = target.voice.channel.id;
-		//let allMembers = user.voice.channel.members;
+        let channel1 = await interaction.client.channels.fetch(user.voice?.channel?.id)
+		if(target === null){
+			await interaction.reply(`You are in ${channel1}`);
+		}
+		else{
+			let channel2 = await interaction.client.channels.fetch(target.voice?.channel?.id)
+			await interaction.reply(`You are in ${channel1} Your Target is in ${channel2}`);
+		}
 		
-		
-		await interaction.reply(`User: ${channel1} Target: ${channel2}`);
 	},
 };
